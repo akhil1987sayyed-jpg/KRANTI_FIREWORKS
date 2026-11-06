@@ -54,11 +54,15 @@
       <p class="text-white text-xs mt-1 font-semibold" id="headerOwnerContact">मालक संपर्क / WhatsApp: ९८XXXXXXXX</p>
     </header>
 
-    <!-- नेव्हिगेशन टॅब (Tabs) -->
-    <div class="grid grid-cols-3 gap-1.5 bg-white rounded-xl shadow-sm p-1.5 mb-4 border border-orange-200 text-center">
+    <!-- नेव्हिगेशन टॅब (४ Tabs) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 bg-white rounded-xl shadow-sm p-1.5 mb-4 border border-orange-200 text-center">
       <button id="tabBillingBtn" onclick="switchTab('billing')" 
         class="py-2.5 rounded-lg font-bold text-xs sm:text-sm transition-all bg-red-600 text-white shadow">
         🧾 बिल तयार करा
+      </button>
+      <button id="tabHistoryBtn" onclick="switchTab('history')" 
+        class="py-2.5 rounded-lg font-bold text-xs sm:text-sm transition-all text-gray-700 hover:bg-orange-50">
+        📚 सेव्ह बिले व हिशोब
       </button>
       <button id="tabNewItemBtn" onclick="switchTab('newItem')" 
         class="py-2.5 rounded-lg font-bold text-xs sm:text-sm transition-all text-gray-700 hover:bg-orange-50">
@@ -81,12 +85,12 @@
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
           <div>
-            <label class="block text-xs font-semibold text-gray-700 mb-1">बिल तयार करणाऱ्याचे नाव (Billed By)</label>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">✍️ बिल तयार करणाऱ्याचे नाव (Billed By)</label>
             <input type="text" id="billerName" placeholder="उदा. राहुल कदम / ऑपरेटर" 
               class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300 bg-amber-50/40 font-medium">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-700 mb-1">ग्राहकाचे नाव (Customer Name)</label>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">👤 ग्राहकाचे नाव (Customer Name)</label>
             <input type="text" id="custName" placeholder="उदा. सचिन सावंत" 
               class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300">
           </div>
@@ -94,12 +98,12 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
           <div>
-            <label class="block text-xs font-semibold text-gray-700 mb-1">ग्राहकाचा मोबाईल नंबर</label>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">📱 ग्राहकाचा मोबाईल नंबर</label>
             <input type="tel" id="custPhone" placeholder="९८XXXXXXXX" 
               class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-700 mb-1">दिनांक</label>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">📅 दिनांक</label>
             <input type="date" id="billDate" 
               class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300">
           </div>
@@ -107,7 +111,6 @@
             <label class="block text-xs font-semibold text-gray-700 mb-1">📦 माल काढणारा (Picker)</label>
             <select id="packerSelect" 
               class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300 bg-orange-50/50 font-semibold text-slate-800">
-              <!-- JS द्वारे ड्रॉपडाउन पर्याय भरले जातील -->
             </select>
           </div>
         </div>
@@ -150,6 +153,13 @@
 
       <!-- बटणे -->
       <section class="bg-white rounded-xl shadow-sm p-4 border border-orange-100 space-y-3">
+        <!-- बिल सेव्ह करण्याचे प्रमुख बटण -->
+        <button type="button" onclick="saveCurrentBill()" 
+          class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-3 px-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm sm:text-base">
+          <span>💾</span>
+          <span>हे बिल सेव्ह करा (Save Bill)</span>
+        </button>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <button type="button" onclick="generatePerfectPDF()" id="pdfBtn"
             class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-3 px-3 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-sm">
@@ -167,7 +177,7 @@
         <!-- WhatsApp बटणे: ग्राहक, मालक व माल काढणारा -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <button type="button" onclick="sendToWhatsApp('customer')" 
-            class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-2.5 px-2 rounded-xl shadow transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm">
+            class="w-full bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-bold py-2.5 px-2 rounded-xl shadow transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm">
             <span>💬</span>
             <span>ग्राहकाला WhatsApp</span>
           </button>
@@ -179,7 +189,7 @@
           </button>
 
           <button type="button" onclick="sendToWhatsApp('owner')" 
-            class="w-full bg-green-700 hover:bg-green-800 active:scale-95 text-white font-bold py-2.5 px-2 rounded-xl shadow transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm">
+            class="w-full bg-green-800 hover:bg-green-900 active:scale-95 text-white font-bold py-2.5 px-2 rounded-xl shadow transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm">
             <span>📲</span>
             <span>मालकाला WhatsApp</span>
           </button>
@@ -187,7 +197,56 @@
       </section>
     </div>
 
-    <!-- ==================== टॅब २: नवीन फटाके जोडा ==================== -->
+    <!-- ==================== टॅब २: सेव्ह बिले व एकूण हिशोब ==================== -->
+    <div id="historyTabContent" class="hidden space-y-4">
+      <!-- ऑपरेटरनुसार फिल्टर व एकूण रकमेचे सारांश कार्ड -->
+      <section class="bg-white rounded-xl shadow-sm p-4 border border-orange-100">
+        <h2 class="text-base font-bold text-red-700 border-b pb-2 mb-3 flex items-center gap-2">
+          <span>📊</span> बिल तयार करणाऱ्याचा हिशोब व एकूण रक्कम
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">बिल तयार करणाऱ्या ऑपरेटरनुसार फिल्टर करा:</label>
+            <select id="billerFilterSelect" onchange="filterBillsByBiller()" 
+              class="w-full px-3 py-2 text-sm border rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-500 font-semibold bg-amber-50/50">
+              <option value="ALL">-- सर्व ऑपरेटर्सची बिले --</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button type="button" onclick="clearAllBillsHistory()" 
+              class="w-full sm:w-auto bg-gray-200 hover:bg-red-100 hover:text-red-700 text-gray-700 text-xs px-3 py-2.5 rounded-lg font-bold transition">
+              🗑️ सर्व जुनी बिले रिकामी करा
+            </button>
+          </div>
+        </div>
+
+        <!-- हिशोब कार्ड्स (Total Count & Total Amount) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-3 text-white shadow">
+            <p class="text-xs font-semibold text-amber-100">एकूण सेव्ह केलेली बिले</p>
+            <p class="text-2xl font-black mt-1"><span id="summaryBillsCount">0</span> बिले</p>
+          </div>
+          <div class="bg-gradient-to-br from-red-600 to-rose-700 rounded-xl p-3 text-white shadow">
+            <p class="text-xs font-semibold text-rose-100">एकूण बिलांची रक्कम (Total Amount)</p>
+            <p class="text-2xl font-black mt-1">₹ <span id="summaryBillsTotal">0</span></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- सेव्ह केलेल्या बिलांची यादी -->
+      <section class="bg-white rounded-xl shadow-sm p-4 border border-orange-100">
+        <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center justify-between">
+          <span>📋 सेव्ह केलेल्या बिलांची तपशीलवार यादी</span>
+          <span class="text-xs text-gray-500 font-normal">सर्व बिले सुरक्षित सेव्ह राहतात</span>
+        </h3>
+        <div id="savedBillsListContainer" class="space-y-2.5 max-h-[60vh] overflow-y-auto pr-1">
+          <!-- JS द्वारे बिले दाखवली जातील -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== टॅब ३: नवीन फटाके जोडा ==================== -->
     <div id="newItemTabContent" class="hidden">
       <section class="bg-white rounded-xl shadow-sm p-4 border border-orange-100">
         <h2 class="text-sm sm:text-base font-bold text-red-700 border-b pb-2 mb-3 flex items-center gap-2">
@@ -198,7 +257,6 @@
           <div>
             <label class="block text-xs font-semibold text-gray-700 mb-1">कॅटेगरी / Heading निवडा</label>
             <select id="newCatSelect" class="w-full px-3 py-2 text-sm border rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-500 font-medium">
-              <!-- JS द्वारे कॅटेगरी लोड होतील -->
             </select>
           </div>
 
@@ -228,10 +286,10 @@
       </section>
     </div>
 
-    <!-- ==================== टॅब ३: दर व्यवस्थापन व सेटिंग्ज ==================== -->
+    <!-- ==================== टॅब ४: दर व्यवस्थापन व सेटिंग्ज ==================== -->
     <div id="ratesTabContent" class="hidden space-y-4">
       
-      <!-- माल काढणारा व्यवस्थापन (Add Packer) -->
+      <!-- माल काढणारा व्यवस्थापन -->
       <section class="bg-white rounded-xl shadow-sm p-4 border border-orange-100">
         <h2 class="text-sm sm:text-base font-bold text-red-700 border-b pb-2 mb-3 flex items-center gap-2">
           <span>📦</span> माल काढणाऱ्या व्यक्तींची यादी व्यवस्थापन
@@ -251,7 +309,6 @@
         <div class="mt-3">
           <label class="block text-xs font-semibold text-gray-600 mb-1">सध्या उपलब्ध माल काढणारे:</label>
           <div id="packersListContainer" class="space-y-1.5 max-h-36 overflow-y-auto">
-            <!-- JS ने भरले जाईल -->
           </div>
         </div>
       </section>
@@ -505,7 +562,6 @@
       }
     ];
 
-    // डिफॉल्ट माल काढणारे
     const defaultPackers = [
       { name: "सचिन (गोडाऊन १)", phone: "919800000001" },
       { name: "गणेश (गोडाऊन २)", phone: "919800000002" }
@@ -513,41 +569,48 @@
 
     let fireworkCatalog = [];
     let packersList = [];
+    let savedBillsList = [];
     let ownerNumber = "919876543210";
 
     // डेटा लोड करणे
     function loadSavedData() {
+      // १. फटाके दर
       const savedCatalog = localStorage.getItem("nkf_catalog_data");
       if (savedCatalog) {
-        try {
-          fireworkCatalog = JSON.parse(savedCatalog);
-        } catch(e) {
-          fireworkCatalog = JSON.parse(JSON.stringify(defaultCatalog));
-        }
+        try { fireworkCatalog = JSON.parse(savedCatalog); } catch(e) { fireworkCatalog = JSON.parse(JSON.stringify(defaultCatalog)); }
       } else {
         fireworkCatalog = JSON.parse(JSON.stringify(defaultCatalog));
       }
 
+      // २. मालक नंबर
       const savedOwner = localStorage.getItem("nkf_owner_phone");
-      if (savedOwner) {
-        ownerNumber = savedOwner;
-      }
+      if (savedOwner) ownerNumber = savedOwner;
       document.getElementById("ownerNumberInput").value = ownerNumber;
 
+      // ३. माल काढणारे
       const savedPackers = localStorage.getItem("nkf_packers_list");
       if (savedPackers) {
-        try {
-          packersList = JSON.parse(savedPackers);
-        } catch(e) {
-          packersList = JSON.parse(JSON.stringify(defaultPackers));
-        }
+        try { packersList = JSON.parse(savedPackers); } catch(e) { packersList = JSON.parse(JSON.stringify(defaultPackers)); }
       } else {
         packersList = JSON.parse(JSON.stringify(defaultPackers));
       }
 
+      // ४. सेव्ह केलेली बिले (Bills History)
+      const savedBills = localStorage.getItem("nkf_saved_bills_history");
+      if (savedBills) {
+        try { savedBillsList = JSON.parse(savedBills); } catch(e) { savedBillsList = []; }
+      } else {
+        savedBillsList = [];
+      }
+
+      // ५. शेवटचा वापरलेला Biller Name
+      const lastBiller = localStorage.getItem("nkf_last_biller_name");
+      if (lastBiller) document.getElementById("billerName").value = lastBiller;
+
       updateOwnerDisplays();
       renderPackersUI();
       populateCategorySelect();
+      renderSavedBillsHistory();
     }
 
     function updateOwnerDisplays() {
@@ -557,17 +620,230 @@
 
     function saveOwnerNumber() {
       const val = document.getElementById("ownerNumberInput").value.trim();
-      if (!val) {
-        alert("कृपया वैध मोबाईल नंबर टाका!");
-        return;
-      }
+      if (!val) { alert("कृपया वैध मोबाईल नंबर टाका!"); return; }
       ownerNumber = val;
       localStorage.setItem("nkf_owner_phone", ownerNumber);
       updateOwnerDisplays();
       alert("✅ मालकाचा नंबर यशस्वीरित्या सेव्ह झाला!");
     }
 
-    // माल काढणारे UI भरणे
+    // ==========================================
+    // बिल सेव्ह करणे व हिशोब व्यवस्थापन (New Feature)
+    // ==========================================
+    function saveCurrentBill() {
+      const billerName = document.getElementById("billerName").value.trim() || "ऑपरेटर";
+      const custName = document.getElementById("custName").value.trim();
+      const custPhone = document.getElementById("custPhone").value.trim() || "-";
+      const billDate = document.getElementById("billDate").value;
+
+      const packerIdx = document.getElementById("packerSelect").value;
+      const packerName = (packerIdx !== "" && packersList[packerIdx]) ? packersList[packerIdx].name : "-";
+
+      if (!custName) {
+        alert("कृपया आधी ग्राहकाचे नाव टाका!");
+        return;
+      }
+
+      const rows = document.querySelectorAll("#itemsTableBody tr");
+      let items = [];
+      let grandTotal = 0;
+
+      rows.forEach(row => {
+        const sel = row.querySelector(".item-select");
+        if (sel.value) {
+          const [cIdx, iIdx] = sel.value.split("_").map(Number);
+          const item = fireworkCatalog[cIdx].items[iIdx];
+          const price = parseFloat(row.querySelector(".item-price").value) || 0;
+          const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
+          const total = price * qty;
+
+          if (qty > 0) {
+            items.push({ name: item.name, price, qty, total });
+            grandTotal += total;
+          }
+        }
+      });
+
+      if (items.length === 0) {
+        alert("कृपया बिलात किमान १ फटाका जोडा!");
+        return;
+      }
+
+      const billRecord = {
+        id: "NKF-" + Date.now().toString().slice(-6),
+        billerName: billerName,
+        custName: custName,
+        custPhone: custPhone,
+        packerName: packerName,
+        billDate: billDate,
+        itemsCount: items.length,
+        items: items,
+        grandTotal: grandTotal,
+        timestamp: new Date().toISOString()
+      };
+
+      savedBillsList.unshift(billRecord);
+      localStorage.setItem("nkf_saved_bills_history", JSON.stringify(savedBillsList));
+      localStorage.setItem("nkf_last_biller_name", billerName);
+
+      renderSavedBillsHistory();
+      alert(`✅ बिल क्र. ${billRecord.id} (रक्कम ₹${grandTotal.toLocaleString('mr-IN')}) यशस्वीरित्या सेव्ह झाले!`);
+    }
+
+    // सेव्ह केलेल्या बिलांचा इतिहास आणि एकूण बेरीज दाखवणे
+    function renderSavedBillsHistory() {
+      const container = document.getElementById("savedBillsListContainer");
+      const filterSelect = document.getElementById("billerFilterSelect");
+      const selectedBiller = filterSelect ? filterSelect.value : "ALL";
+
+      // बिल तयार करणाऱ्यांची युनिक यादी ड्रॉपडाउनमध्ये भरणे
+      const uniqueBillers = Array.from(new Set(savedBillsList.map(b => b.billerName || "ऑपरेटर")));
+      const currentFilterVal = filterSelect.value;
+      filterSelect.innerHTML = '<option value="ALL">-- सर्व ऑपरेटरची बिले --</option>';
+      uniqueBillers.forEach(b => {
+        const opt = document.createElement("option");
+        opt.value = b;
+        opt.text = `ऑपरेटर: ${b}`;
+        filterSelect.appendChild(opt);
+      });
+      filterSelect.value = currentFilterVal;
+
+      container.innerHTML = "";
+
+      // फिल्टरिंग
+      let filteredBills = savedBillsList;
+      if (selectedBiller && selectedBiller !== "ALL") {
+        filteredBills = savedBillsList.filter(b => b.billerName === selectedBiller);
+      }
+
+      // एकूण रक्कम व बिले संख्या मोजणे
+      let totalAmount = 0;
+      filteredBills.forEach(b => { totalAmount += b.grandTotal; });
+
+      document.getElementById("summaryBillsCount").innerText = filteredBills.length;
+      document.getElementById("summaryBillsTotal").innerText = totalAmount.toLocaleString('mr-IN');
+
+      if (filteredBills.length === 0) {
+        container.innerHTML = `<p class="text-xs text-gray-500 text-center py-6 bg-orange-50/50 rounded-xl">कोणतेही सेव्ह केलेले बिल आढळले नाही.</p>`;
+        return;
+      }
+
+      filteredBills.forEach((b, idx) => {
+        const card = document.createElement("div");
+        card.className = "p-3 bg-orange-50/40 rounded-xl border border-orange-200 text-xs hover:bg-orange-50 transition";
+        card.innerHTML = `
+          <div class="flex justify-between items-start border-b border-orange-200/60 pb-1.5 mb-2">
+            <div>
+              <span class="font-bold text-red-700 font-mono text-sm">${b.id}</span>
+              <span class="ml-2 text-gray-600 font-medium">📅 ${b.billDate}</span>
+            </div>
+            <span class="text-sm font-extrabold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-200">₹ ${b.grandTotal.toLocaleString('mr-IN')}</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-gray-700 mb-2">
+            <p><strong>👤 ग्राहक:</strong> ${b.custName} (${b.custPhone})</p>
+            <p><strong>✍️ ऑपरेटर:</strong> <span class="text-orange-800 font-bold">${b.billerName}</span></p>
+            <p><strong>📦 माल काढणारा:</strong> ${b.packerName}</p>
+            <p><strong>🎆 वस्तू नग:</strong> ${b.itemsCount} फटाके</p>
+          </div>
+
+          <div class="flex justify-end gap-2 pt-1 border-t border-orange-100">
+            <button type="button" onclick="loadBillToCurrentForm('${b.id}')" 
+              class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-2.5 py-1 rounded text-[11px] shadow">
+              पुन्हा बिलात आणा ↺
+            </button>
+            <button type="button" onclick="deleteBillRecord('${b.id}')" 
+              class="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-2 py-1 rounded text-[11px]">
+              हटवा ✕
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterBillsByBiller() {
+      renderSavedBillsHistory();
+    }
+
+    function loadBillToCurrentForm(billId) {
+      const bill = savedBillsList.find(b => b.id === billId);
+      if (!bill) return;
+
+      document.getElementById("billerName").value = bill.billerName;
+      document.getElementById("custName").value = bill.custName;
+      document.getElementById("custPhone").value = bill.custPhone;
+      document.getElementById("billDate").value = bill.billDate;
+
+      // माल काढणारा सिलेक्ट
+      const pIdx = packersList.findIndex(p => p.name === bill.packerName);
+      if (pIdx !== -1) document.getElementById("packerSelect").value = pIdx;
+
+      // फटाक्यांचे टेबल भरणे
+      const tbody = document.getElementById("itemsTableBody");
+      tbody.innerHTML = "";
+
+      bill.items.forEach(it => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-amber-50/50";
+        tr.innerHTML = `
+          <td class="py-2 px-2">
+            <select onchange="onItemSelect(this)" class="item-select w-full p-2 text-xs border rounded-md border-gray-300 focus:ring-1 focus:ring-orange-500 bg-white font-medium">
+              ${getDropdownHtml()}
+            </select>
+          </td>
+          <td class="py-2 px-2">
+            <input type="number" min="0" value="${it.price}" oninput="calculateTotal()" 
+              class="item-price w-full p-2 text-xs border rounded-md border-gray-300 text-right font-semibold">
+          </td>
+          <td class="py-2 px-2">
+            <input type="number" min="1" value="${it.qty}" oninput="calculateTotal()" 
+              class="item-qty w-full p-2 text-xs border rounded-md border-gray-300 text-center font-semibold">
+          </td>
+          <td class="py-2 px-3 text-right font-bold text-gray-700">
+            ₹ <span class="row-total">${it.total}</span>
+          </td>
+          <td class="py-2 px-2 text-center">
+            <button type="button" onclick="removeRow(this)" class="text-red-500 hover:text-red-700 font-bold px-2 py-1">✕</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+
+        // सिलेक्ट व्हॅल्यू मॅच करणे
+        const sel = tr.querySelector(".item-select");
+        for (let i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].text.includes(it.name)) {
+            sel.selectedIndex = i;
+            break;
+          }
+        }
+      });
+
+      calculateTotal();
+      switchTab('billing');
+      alert(`✅ बिल क्र. ${billId} मुख्य बिलात लोड केले गेले!`);
+    }
+
+    function deleteBillRecord(billId) {
+      if (confirm(`बिल क्र. ${billId} खरोखर हटवायचे आहे का?`)) {
+        savedBillsList = savedBillsList.filter(b => b.id !== billId);
+        localStorage.setItem("nkf_saved_bills_history", JSON.stringify(savedBillsList));
+        renderSavedBillsHistory();
+      }
+    }
+
+    function clearAllBillsHistory() {
+      if (confirm("सर्व सेव्ह केलेली बिले कायमची हटवायची आहेत का?")) {
+        savedBillsList = [];
+        localStorage.removeItem("nkf_saved_bills_history");
+        renderSavedBillsHistory();
+        alert("सर्व बिले हटवण्यात आली आहेत!");
+      }
+    }
+
+    // ==========================================
+    // इतर फंक्शन्स
+    // ==========================================
     function renderPackersUI() {
       const select = document.getElementById("packerSelect");
       select.innerHTML = '<option value="">-- माल काढणारा निवडा --</option>';
@@ -599,14 +875,8 @@
       const name = document.getElementById("newPackerName").value.trim();
       const phone = document.getElementById("newPackerPhone").value.trim();
 
-      if (!name) {
-        alert("कृपया माल काढणाऱ्याचे नाव टाका!");
-        return;
-      }
-      if (!phone || phone.length < 10) {
-        alert("कृपया योग्य मोबाईल नंबर टाका!");
-        return;
-      }
+      if (!name) { alert("कृपया माल काढणाऱ्याचे नाव टाका!"); return; }
+      if (!phone || phone.length < 10) { alert("कृपया योग्य मोबाईल नंबर टाका!"); return; }
 
       packersList.push({ name, phone });
       localStorage.setItem("nkf_packers_list", JSON.stringify(packersList));
@@ -624,17 +894,19 @@
       }
     }
 
-    // टॅब बदलणे
     function switchTab(tab) {
       const bTab = document.getElementById("billingTabContent");
+      const hTab = document.getElementById("historyTabContent");
       const nTab = document.getElementById("newItemTabContent");
       const rTab = document.getElementById("ratesTabContent");
 
       const bBtn = document.getElementById("tabBillingBtn");
+      const hBtn = document.getElementById("tabHistoryBtn");
       const nBtn = document.getElementById("tabNewItemBtn");
       const rBtn = document.getElementById("tabRatesBtn");
 
       bTab.classList.add("hidden");
+      hTab.classList.add("hidden");
       nTab.classList.add("hidden");
       rTab.classList.add("hidden");
 
@@ -642,6 +914,7 @@
       const activeBtnClass = "py-2.5 rounded-lg font-bold text-xs sm:text-sm transition-all bg-red-600 text-white shadow";
 
       bBtn.className = defaultBtnClass;
+      hBtn.className = defaultBtnClass;
       nBtn.className = defaultBtnClass;
       rBtn.className = defaultBtnClass;
 
@@ -649,6 +922,10 @@
         bTab.classList.remove("hidden");
         bBtn.className = activeBtnClass;
         refreshDropdowns();
+      } else if (tab === 'history') {
+        hTab.classList.remove("hidden");
+        hBtn.className = activeBtnClass;
+        renderSavedBillsHistory();
       } else if (tab === 'newItem') {
         nTab.classList.remove("hidden");
         nBtn.className = activeBtnClass;
@@ -678,18 +955,11 @@
       const itemName = document.getElementById("newItemName").value.trim();
       const itemPrice = parseFloat(document.getElementById("newItemPrice").value) || 0;
 
-      if (!itemName) {
-        alert("कृपया फटाक्याचे नाव टाका!");
-        return;
-      }
+      if (!itemName) { alert("कृपया फटाक्याचे नाव टाका!"); return; }
 
       let targetCatIndex = -1;
-
       if (customCat) {
-        fireworkCatalog.push({
-          category: customCat,
-          items: []
-        });
+        fireworkCatalog.push({ category: customCat, items: [] });
         targetCatIndex = fireworkCatalog.length - 1;
       } else if (catIdx !== "") {
         targetCatIndex = parseInt(catIdx);
@@ -698,11 +968,7 @@
         return;
       }
 
-      fireworkCatalog[targetCatIndex].items.push({
-        name: itemName,
-        price: itemPrice
-      });
-
+      fireworkCatalog[targetCatIndex].items.push({ name: itemName, price: itemPrice });
       localStorage.setItem("nkf_catalog_data", JSON.stringify(fireworkCatalog));
       
       document.getElementById("newItemName").value = "";
@@ -910,19 +1176,14 @@
       return { count, totalAmount, custName, billDate, billerName, packerName };
     }
 
-    // स्वच्छ PDF तयार करणे
     async function generatePerfectPDF() {
       const { count, custName, billDate } = populatePrintArea();
-      if (count === 0) {
-        alert("कृपया बिलात किमान एक फटाका निवडा!");
-        return;
-      }
+      if (count === 0) { alert("कृपया बिलात किमान एक फटाका निवडा!"); return; }
 
       const btnText = document.getElementById("pdfBtnText");
       btnText.innerText = "⏳ सुबक PDF तयार होत आहे...";
 
       const printArea = document.getElementById("printArea");
-      
       printArea.style.position = "fixed";
       printArea.style.left = "0";
       printArea.style.top = "0";
@@ -966,14 +1227,10 @@
 
     function openSystemPrintPDF() {
       const { count } = populatePrintArea();
-      if (count === 0) {
-        alert("कृपया बिलात किमान एक फटाका निवडा!");
-        return;
-      }
+      if (count === 0) { alert("कृपया बिलात किमान एक फटाका निवडा!"); return; }
       window.print();
     }
 
-    // WhatsApp पाठवणे
     function sendToWhatsApp(type = 'customer') {
       const billerName = document.getElementById("billerName").value.trim() || "-";
       const custName = document.getElementById("custName").value.trim() || "ग्राहक";
@@ -1006,19 +1263,13 @@
         }
       });
 
-      if (count === 0) {
-        alert("कृपया बिलात किमान एक फटाका निवडा!");
-        return;
-      }
+      if (count === 0) { alert("कृपया बिलात किमान एक फटाका निवडा!"); return; }
 
       let msg = "";
       let targetNumber = "";
 
       if (type === 'packer') {
-        if (!selectedPacker) {
-          alert("कृपया प्रथम ड्रॉपडाउनमधून 'माल काढणारा' निवडा!");
-          return;
-        }
+        if (!selectedPacker) { alert("कृपया प्रथम ड्रॉपडाउनमधून 'माल काढणारा' निवडा!"); return; }
         targetNumber = selectedPacker.phone.replace(/[^0-9]/g, '');
 
         msg = `📦 *न्यू क्रांती फायरवर्क्स - माल काढण्याची ऑर्डर* 📦\n`;
