@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>न्यू क्रांती फायरवर्क्स - बिलिंग सिस्टीम</title>
+  <title>न्यू क्रांती फायरवर्क्स - बिलिंग सिस्टीम २०२६</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- html2canvas और jsPDF -->
+  <!-- html2canvas आणि jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
@@ -51,18 +51,22 @@
         <span class="text-2xl">✨</span>
       </div>
       <p class="text-amber-100 text-xs sm:text-sm font-medium">होलसेल फटाके दरपत्रक २०२६ • मोबाईल बिलिंग सिस्टीम</p>
-      <p class="text-white text-xs mt-1 font-semibold" id="headerOwnerContact">संपर्क / मो.: ९८XXXXXXXX</p>
+      <p class="text-white text-xs mt-1 font-semibold" id="headerOwnerContact">मालक संपर्क / WhatsApp: ९८XXXXXXXX</p>
     </header>
 
     <!-- नेव्हिगेशन टॅब (Tabs) -->
-    <div class="flex bg-white rounded-xl shadow-sm p-1.5 mb-4 border border-orange-200">
+    <div class="grid grid-cols-3 gap-1.5 bg-white rounded-xl shadow-sm p-1.5 mb-4 border border-orange-200 text-center">
       <button id="tabBillingBtn" onclick="switchTab('billing')" 
-        class="flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all bg-red-600 text-white shadow">
+        class="py-2.5 rounded-lg font-bold text-xs sm:text-sm transition-all bg-red-600 text-white shadow">
         🧾 बिल तयार करा
       </button>
+      <button id="tabNewItemBtn" onclick="switchTab('newItem')" 
+        class="py-2.5 rounded-lg font-bold text-xs sm:text-sm transition-all text-gray-700 hover:bg-orange-50">
+        ➕ नवीन फटाके जोडा
+      </button>
       <button id="tabRatesBtn" onclick="switchTab('rates')" 
-        class="flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all text-gray-700 hover:bg-orange-50">
-        ⚙️ वस्तूंचे दर व मालकाचा नंबर
+        class="py-2.5 rounded-lg font-bold text-xs sm:text-sm transition-all text-gray-700 hover:bg-orange-50">
+        ⚙️ दर व सेटिंग्ज
       </button>
     </div>
 
@@ -72,7 +76,7 @@
       <!-- बिल व ग्राहक माहिती -->
       <section class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-orange-100">
         <h2 class="text-sm sm:text-base font-bold text-red-700 border-b pb-2 mb-3 flex items-center gap-2">
-          <span>📋</span> बिल व ग्राहकाचा तपशील
+          <span>📋</span> बिल, ग्राहक व माल काढणारा तपशील
         </h2>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
@@ -88,7 +92,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
           <div>
             <label class="block text-xs font-semibold text-gray-700 mb-1">ग्राहकाचा मोबाईल नंबर</label>
             <input type="tel" id="custPhone" placeholder="९८XXXXXXXX" 
@@ -98,6 +102,13 @@
             <label class="block text-xs font-semibold text-gray-700 mb-1">दिनांक</label>
             <input type="date" id="billDate" 
               class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">📦 माल काढणारा (Picker)</label>
+            <select id="packerSelect" 
+              class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300 bg-orange-50/50 font-semibold text-slate-800">
+              <!-- JS द्वारे ड्रॉपडाउन पर्याय भरले जातील -->
+            </select>
           </div>
         </div>
       </section>
@@ -153,26 +164,100 @@
           </button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <button type="button" onclick="sendToWhatsApp(false)" 
-            class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-3 px-3 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-sm">
+        <!-- WhatsApp बटणे: ग्राहक, मालक व माल काढणारा -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <button type="button" onclick="sendToWhatsApp('customer')" 
+            class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-2.5 px-2 rounded-xl shadow transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm">
             <span>💬</span>
-            <span>ग्राहकाला WhatsApp वर पाठवा</span>
+            <span>ग्राहकाला WhatsApp</span>
           </button>
 
-          <button type="button" onclick="sendToWhatsApp(true)" 
-            class="w-full bg-green-700 hover:bg-green-800 active:scale-95 text-white font-bold py-3 px-3 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-sm">
+          <button type="button" onclick="sendToWhatsApp('packer')" 
+            class="w-full bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold py-2.5 px-2 rounded-xl shadow transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm">
+            <span>📦</span>
+            <span>माल काढणाऱ्याला WhatsApp</span>
+          </button>
+
+          <button type="button" onclick="sendToWhatsApp('owner')" 
+            class="w-full bg-green-700 hover:bg-green-800 active:scale-95 text-white font-bold py-2.5 px-2 rounded-xl shadow transition-all flex items-center justify-center gap-1.5 text-xs sm:text-sm">
             <span>📲</span>
-            <span>मालकाच्या नंबरवर पाठवा</span>
+            <span>मालकाला WhatsApp</span>
           </button>
         </div>
       </section>
     </div>
 
-    <!-- ==================== टॅब २: दरपत्रक व मालकाची माहिती ==================== -->
-    <div id="ratesTabContent" class="hidden">
+    <!-- ==================== टॅब २: नवीन फटाके जोडा ==================== -->
+    <div id="newItemTabContent" class="hidden">
+      <section class="bg-white rounded-xl shadow-sm p-4 border border-orange-100">
+        <h2 class="text-sm sm:text-base font-bold text-red-700 border-b pb-2 mb-3 flex items-center gap-2">
+          <span>➕</span> दरपत्रकात नवीन फटाका जोडा
+        </h2>
+
+        <form onsubmit="handleAddNewItem(event)" class="space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">कॅटेगरी / Heading निवडा</label>
+            <select id="newCatSelect" class="w-full px-3 py-2 text-sm border rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-500 font-medium">
+              <!-- JS द्वारे कॅटेगरी लोड होतील -->
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">किंवा नवीन कॅटेगरीचे नाव लिहा (पर्यायी)</label>
+            <input type="text" id="newCustomCat" placeholder="नवीन कॅटेगरी असल्यास नाव लिहा (उदा. ११. फॅन्सी रोलर्स)" 
+              class="w-full px-3 py-2 text-sm border rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">नवीन फटाक्याचे नाव (Item Name)</label>
+            <input type="text" id="newItemName" required placeholder="उदा. स्पेशल ५००० साऊंड / नवीन स्काय व्हील" 
+              class="w-full px-3 py-2 text-sm border rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">दर (₹)</label>
+            <input type="number" id="newItemPrice" required min="0" placeholder="उदा. 450" 
+              class="w-full px-3 py-2 text-sm border rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-500">
+          </div>
+
+          <button type="submit" 
+            class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl shadow text-sm transition">
+            ✨ नवीन फटाका सेव्ह करा
+          </button>
+        </form>
+      </section>
+    </div>
+
+    <!-- ==================== टॅब ३: दर व्यवस्थापन व सेटिंग्ज ==================== -->
+    <div id="ratesTabContent" class="hidden space-y-4">
+      
+      <!-- माल काढणारा व्यवस्थापन (Add Packer) -->
+      <section class="bg-white rounded-xl shadow-sm p-4 border border-orange-100">
+        <h2 class="text-sm sm:text-base font-bold text-red-700 border-b pb-2 mb-3 flex items-center gap-2">
+          <span>📦</span> माल काढणाऱ्या व्यक्तींची यादी व्यवस्थापन
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+          <input type="text" id="newPackerName" placeholder="माल काढणाऱ्याचे नाव (उदा. गणेश पाटील)" 
+            class="px-3 py-2 text-sm border rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-500">
+          <input type="tel" id="newPackerPhone" placeholder="मोबाईल नंबर (उदा. 9198XXXXXXXX)" 
+            class="px-3 py-2 text-sm border rounded-lg border-gray-300 focus:ring-2 focus:ring-orange-500 font-mono">
+        </div>
+        <button type="button" onclick="addPacker()" 
+          class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg text-sm shadow transition">
+          ➕ माल काढणारा जोडा
+        </button>
+
+        <div class="mt-3">
+          <label class="block text-xs font-semibold text-gray-600 mb-1">सध्या उपलब्ध माल काढणारे:</label>
+          <div id="packersListContainer" class="space-y-1.5 max-h-36 overflow-y-auto">
+            <!-- JS ने भरले जाईल -->
+          </div>
+        </div>
+      </section>
+
       <!-- मालकाचा नंबर सेट करण्याचा विभाग -->
-      <section class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-orange-100">
+      <section class="bg-white rounded-xl shadow-sm p-4 border border-orange-100">
         <h2 class="text-sm sm:text-base font-bold text-red-700 border-b pb-2 mb-3 flex items-center gap-2">
           <span>📞</span> मालकाचा मोबाईल / WhatsApp नंबर सेट करा
         </h2>
@@ -184,7 +269,6 @@
             नंबर सेव्ह करा
           </button>
         </div>
-        <p class="text-xs text-gray-500 mt-1.5">* हा नंबर बिलाच्या हेडमध्ये, PDF पावतीमध्ये आणि थेट मालकाला बिल पाठवण्यासाठी वापरला जाईल.</p>
       </section>
 
       <!-- दर व्यवस्थापन -->
@@ -192,7 +276,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-3 border-b border-orange-100">
           <div>
             <h2 class="text-base font-bold text-red-700">⚙️ फटाक्यांचे चालू दर बदला</h2>
-            <p class="text-xs text-gray-500">येथे बदललेले दर कायमस्वरूपी सेव्ह राहतील व बिलात लागू होतील.</p>
+            <p class="text-xs text-gray-500">सर्व बदल कायमस्वरूपी सेव्ह राहतील.</p>
           </div>
           <button type="button" onclick="resetToDefaultRates()" 
             class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs px-3 py-1.5 rounded-lg font-bold transition">
@@ -200,7 +284,7 @@
           </button>
         </div>
 
-        <div id="rateEditorContainer" class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+        <div id="rateEditorContainer" class="space-y-4 max-h-[55vh] overflow-y-auto pr-1">
         </div>
 
         <div class="mt-4 pt-3 border-t flex gap-3">
@@ -221,7 +305,7 @@
     <div style="text-align: center; border-bottom: 2px solid #b91c1c; padding-bottom: 8px; margin-bottom: 12px;">
       <h1 style="font-size: 22px; font-weight: 800; color: #b91c1c; margin: 0; letter-spacing: 0.5px;">✨ न्यू क्रांती फायरवर्क्स ✨</h1>
       <p style="font-size: 11px; color: #64748b; margin: 3px 0 0 0; font-weight: 600;">होलसेल व किरकोळ फटाके विक्री • बिल पावती २०२६</p>
-      <p style="font-size: 11px; color: #b91c1c; margin: 2px 0 0 0; font-weight: bold;">मोबाईल / संपर्क: <span id="pOwnerPhone">-</span></p>
+      <p style="font-size: 11px; color: #b91c1c; margin: 2px 0 0 0; font-weight: bold;">मालक संपर्क: <span id="pOwnerPhone">-</span></p>
     </div>
 
     <!-- माहिती बार -->
@@ -234,6 +318,7 @@
         <p style="margin: 2px 0;"><strong>बिल क्र.:</strong> <span id="pBillNo" style="font-weight: bold; color: #b91c1c;">NKF-101</span></p>
         <p style="margin: 2px 0;"><strong>दिनांक:</strong> <span id="pBillDate">-</span></p>
         <p style="margin: 2px 0;"><strong>बिल तयार करणारा:</strong> <span id="pBillerName" style="font-weight: bold;">-</span></p>
+        <p style="margin: 2px 0;"><strong>माल काढणारा:</strong> <span id="pPackerName" style="font-weight: bold; color: #b45309;">-</span></p>
       </div>
     </div>
 
@@ -420,12 +505,18 @@
       }
     ];
 
+    // डिफॉल्ट माल काढणारे
+    const defaultPackers = [
+      { name: "सचिन (गोडाऊन १)", phone: "919800000001" },
+      { name: "गणेश (गोडाऊन २)", phone: "919800000002" }
+    ];
+
     let fireworkCatalog = [];
+    let packersList = [];
     let ownerNumber = "919876543210";
 
     // डेटा लोड करणे
     function loadSavedData() {
-      // दर डेटा
       const savedCatalog = localStorage.getItem("nkf_catalog_data");
       if (savedCatalog) {
         try {
@@ -437,17 +528,30 @@
         fireworkCatalog = JSON.parse(JSON.stringify(defaultCatalog));
       }
 
-      // मालकाचा नंबर
       const savedOwner = localStorage.getItem("nkf_owner_phone");
       if (savedOwner) {
         ownerNumber = savedOwner;
       }
       document.getElementById("ownerNumberInput").value = ownerNumber;
+
+      const savedPackers = localStorage.getItem("nkf_packers_list");
+      if (savedPackers) {
+        try {
+          packersList = JSON.parse(savedPackers);
+        } catch(e) {
+          packersList = JSON.parse(JSON.stringify(defaultPackers));
+        }
+      } else {
+        packersList = JSON.parse(JSON.stringify(defaultPackers));
+      }
+
       updateOwnerDisplays();
+      renderPackersUI();
+      populateCategorySelect();
     }
 
     function updateOwnerDisplays() {
-      document.getElementById("headerOwnerContact").innerText = `संपर्क / WhatsApp: ${ownerNumber}`;
+      document.getElementById("headerOwnerContact").innerText = `मालक संपर्क / WhatsApp: ${ownerNumber}`;
       document.getElementById("pOwnerPhone").innerText = ownerNumber;
     }
 
@@ -463,29 +567,154 @@
       alert("✅ मालकाचा नंबर यशस्वीरित्या सेव्ह झाला!");
     }
 
+    // माल काढणारे UI भरणे
+    function renderPackersUI() {
+      const select = document.getElementById("packerSelect");
+      select.innerHTML = '<option value="">-- माल काढणारा निवडा --</option>';
+
+      packersList.forEach((p, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.text = `${p.name} (${p.phone})`;
+        select.appendChild(opt);
+      });
+
+      const container = document.getElementById("packersListContainer");
+      container.innerHTML = "";
+      packersList.forEach((p, idx) => {
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between p-2 bg-orange-50 rounded border border-orange-200 text-xs";
+        div.innerHTML = `
+          <div>
+            <span class="font-bold text-gray-800">${p.name}</span>
+            <span class="text-gray-500 font-mono text-[11px] ml-2">📱 ${p.phone}</span>
+          </div>
+          <button type="button" onclick="deletePacker(${idx})" class="text-red-600 hover:text-red-800 font-bold px-1.5 py-0.5">✕</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addPacker() {
+      const name = document.getElementById("newPackerName").value.trim();
+      const phone = document.getElementById("newPackerPhone").value.trim();
+
+      if (!name) {
+        alert("कृपया माल काढणाऱ्याचे नाव टाका!");
+        return;
+      }
+      if (!phone || phone.length < 10) {
+        alert("कृपया योग्य मोबाईल नंबर टाका!");
+        return;
+      }
+
+      packersList.push({ name, phone });
+      localStorage.setItem("nkf_packers_list", JSON.stringify(packersList));
+      document.getElementById("newPackerName").value = "";
+      document.getElementById("newPackerPhone").value = "";
+      renderPackersUI();
+      alert(`✅ ${name} यांना माल काढणाऱ्यांच्या यादीत जोडले गेले!`);
+    }
+
+    function deletePacker(idx) {
+      if (confirm(`या व्यक्तीला यादीतून काढायचे आहे का?`)) {
+        packersList.splice(idx, 1);
+        localStorage.setItem("nkf_packers_list", JSON.stringify(packersList));
+        renderPackersUI();
+      }
+    }
+
     // टॅब बदलणे
     function switchTab(tab) {
       const bTab = document.getElementById("billingTabContent");
+      const nTab = document.getElementById("newItemTabContent");
       const rTab = document.getElementById("ratesTabContent");
+
       const bBtn = document.getElementById("tabBillingBtn");
+      const nBtn = document.getElementById("tabNewItemBtn");
       const rBtn = document.getElementById("tabRatesBtn");
+
+      bTab.classList.add("hidden");
+      nTab.classList.add("hidden");
+      rTab.classList.add("hidden");
+
+      const defaultBtnClass = "py-2.5 rounded-lg font-bold text-xs sm:text-sm transition-all text-gray-700 hover:bg-orange-50";
+      const activeBtnClass = "py-2.5 rounded-lg font-bold text-xs sm:text-sm transition-all bg-red-600 text-white shadow";
+
+      bBtn.className = defaultBtnClass;
+      nBtn.className = defaultBtnClass;
+      rBtn.className = defaultBtnClass;
 
       if (tab === 'billing') {
         bTab.classList.remove("hidden");
-        rTab.classList.add("hidden");
-        bBtn.className = "flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all bg-red-600 text-white shadow";
-        rBtn.className = "flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all text-gray-700 hover:bg-orange-50";
+        bBtn.className = activeBtnClass;
         refreshDropdowns();
-      } else {
-        bTab.classList.add("hidden");
+      } else if (tab === 'newItem') {
+        nTab.classList.remove("hidden");
+        nBtn.className = activeBtnClass;
+        populateCategorySelect();
+      } else if (tab === 'rates') {
         rTab.classList.remove("hidden");
-        rBtn.className = "flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all bg-red-600 text-white shadow";
-        bBtn.className = "flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all text-gray-700 hover:bg-orange-50";
+        rBtn.className = activeBtnClass;
         renderRateEditor();
       }
     }
 
-    // Dropdown तयार करणे
+    function populateCategorySelect() {
+      const select = document.getElementById("newCatSelect");
+      select.innerHTML = '<option value="">-- अस्तित्वात असलेली कॅटेगरी निवडा --</option>';
+      fireworkCatalog.forEach((cat, idx) => {
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.text = cat.category;
+        select.appendChild(opt);
+      });
+    }
+
+    function handleAddNewItem(e) {
+      e.preventDefault();
+      const catIdx = document.getElementById("newCatSelect").value;
+      const customCat = document.getElementById("newCustomCat").value.trim();
+      const itemName = document.getElementById("newItemName").value.trim();
+      const itemPrice = parseFloat(document.getElementById("newItemPrice").value) || 0;
+
+      if (!itemName) {
+        alert("कृपया फटाक्याचे नाव टाका!");
+        return;
+      }
+
+      let targetCatIndex = -1;
+
+      if (customCat) {
+        fireworkCatalog.push({
+          category: customCat,
+          items: []
+        });
+        targetCatIndex = fireworkCatalog.length - 1;
+      } else if (catIdx !== "") {
+        targetCatIndex = parseInt(catIdx);
+      } else {
+        alert("कृपया एक कॅटेगरी निवडा किंवा नवीन कॅटेगरीचे नाव टाका!");
+        return;
+      }
+
+      fireworkCatalog[targetCatIndex].items.push({
+        name: itemName,
+        price: itemPrice
+      });
+
+      localStorage.setItem("nkf_catalog_data", JSON.stringify(fireworkCatalog));
+      
+      document.getElementById("newItemName").value = "";
+      document.getElementById("newItemPrice").value = "";
+      document.getElementById("newCustomCat").value = "";
+
+      alert(`✅ "${itemName}" हा फटाका यशस्वीरित्या जोडला गेला!`);
+      populateCategorySelect();
+      refreshDropdowns();
+      switchTab('billing');
+    }
+
     function getDropdownHtml() {
       let html = '<option value="">-- फटाका निवडा --</option>';
       fireworkCatalog.forEach((cat, cIdx) => {
@@ -506,7 +735,6 @@
       });
     }
 
-    // दर व्यवस्थापन स्क्रीन बनवणे
     function renderRateEditor() {
       const container = document.getElementById("rateEditorContainer");
       container.innerHTML = "";
@@ -553,10 +781,11 @@
     }
 
     function resetToDefaultRates() {
-      if (confirm("कंपनीचे मूळ डिफॉल्ट दर परत आणायचे आहेत का?")) {
+      if (confirm("कंपनीचे मूळ डिफॉल्ट दर व कॅटलॉग परत आणायचे आहेत का?")) {
         fireworkCatalog = JSON.parse(JSON.stringify(defaultCatalog));
         localStorage.removeItem("nkf_catalog_data");
         renderRateEditor();
+        populateCategorySelect();
         alert("मूळ दर रिस्टोअर केले गेले आहेत!");
       }
     }
@@ -631,7 +860,11 @@
       const custPhone = document.getElementById("custPhone").value.trim() || "-";
       const billDate = document.getElementById("billDate").value;
 
+      const packerIdx = document.getElementById("packerSelect").value;
+      const packerName = (packerIdx !== "" && packersList[packerIdx]) ? packersList[packerIdx].name : "-";
+
       document.getElementById("pBillerName").innerText = billerName;
+      document.getElementById("pPackerName").innerText = packerName;
       document.getElementById("pCustName").innerText = custName;
       document.getElementById("pCustPhone").innerText = custPhone;
       document.getElementById("pBillDate").innerText = billDate;
@@ -674,7 +907,7 @@
       });
 
       document.getElementById("pGrandTotal").innerText = totalAmount.toLocaleString('mr-IN');
-      return { count, totalAmount, custName, billDate, billerName };
+      return { count, totalAmount, custName, billDate, billerName, packerName };
     }
 
     // स्वच्छ PDF तयार करणे
@@ -740,12 +973,16 @@
       window.print();
     }
 
-    // WhatsApp वर बिल पाठवणे
-    function sendToWhatsApp(sendToOwner = false) {
+    // WhatsApp पाठवणे
+    function sendToWhatsApp(type = 'customer') {
       const billerName = document.getElementById("billerName").value.trim() || "-";
       const custName = document.getElementById("custName").value.trim() || "ग्राहक";
       const custPhone = document.getElementById("custPhone").value.trim() || "-";
       const billDate = document.getElementById("billDate").value;
+
+      const packerIdx = document.getElementById("packerSelect").value;
+      const selectedPacker = (packerIdx !== "" && packersList[packerIdx]) ? packersList[packerIdx] : null;
+      const packerName = selectedPacker ? selectedPacker.name : "-";
 
       const rows = document.querySelectorAll("#itemsTableBody tr");
       let itemsListText = "";
@@ -764,7 +1001,7 @@
           if (qty > 0) {
             count++;
             grandTotal += total;
-            itemsListText += `${count}. ${item.name}\n   ${qty} नग × ₹${price} = ₹${total}\n`;
+            itemsListText += `${count}. ${item.name} ➔ *${qty} नग* (₹${price})\n`;
           }
         }
       });
@@ -774,31 +1011,54 @@
         return;
       }
 
-      let msg = `✨ *न्यू क्रांती फायरवर्क्स* ✨\n`;
-      msg += `📞 *मालक संपर्क:* ${ownerNumber}\n`;
-      msg += `--------------------------------\n`;
-      msg += `📅 *दिनांक:* ${billDate}\n`;
-      msg += `👤 *ग्राहक:* ${custName}\n`;
-      msg += `📱 *ग्राहक मोबाईल:* ${custPhone}\n`;
-      msg += `✍️ *बिल तयार करणारा:* ${billerName}\n`;
-      msg += `--------------------------------\n`;
-      msg += `*खरेदी तपशील:*\n\n`;
-      msg += itemsListText;
-      msg += `--------------------------------\n`;
-      msg += `💰 *एकूण रक्कम (Grand Total): ₹${grandTotal}*\n`;
-      msg += `--------------------------------\n`;
-      msg += `धन्यवाद! आपली दिवाळी आनंदाची जावो! 🪔💥`;
-
-      const encodedMsg = encodeURIComponent(msg);
-      
+      let msg = "";
       let targetNumber = "";
-      if (sendToOwner) {
-        targetNumber = ownerNumber.replace(/[^0-9]/g, '');
-      } else if (custPhone && custPhone !== "-" && custPhone.length >= 10) {
-        let cleanCust = custPhone.replace(/[^0-9]/g, '');
-        targetNumber = cleanCust.length === 10 ? '91' + cleanCust : cleanCust;
+
+      if (type === 'packer') {
+        if (!selectedPacker) {
+          alert("कृपया प्रथम ड्रॉपडाउनमधून 'माल काढणारा' निवडा!");
+          return;
+        }
+        targetNumber = selectedPacker.phone.replace(/[^0-9]/g, '');
+
+        msg = `📦 *न्यू क्रांती फायरवर्क्स - माल काढण्याची ऑर्डर* 📦\n`;
+        msg += `--------------------------------\n`;
+        msg += `👤 *माल काढणारा:* ${packerName}\n`;
+        msg += `👤 *ग्राहक:* ${custName} (${custPhone})\n`;
+        msg += `📅 *दिनांक:* ${billDate}\n`;
+        msg += `✍️ *बिल ऑपरेटर:* ${billerName}\n`;
+        msg += `--------------------------------\n`;
+        msg += `📋 *काढायचा माल / फटाक्यांची यादी:*\n\n`;
+        msg += itemsListText;
+        msg += `--------------------------------\n`;
+        msg += `⚠️ कृपया वरील प्रमाणे अचूक नग पॅक करून काउंटरला द्या.`;
+
+      } else {
+        msg = `✨ *न्यू क्रांती फायरवर्क्स* ✨\n`;
+        msg += `📞 *मालक संपर्क:* ${ownerNumber}\n`;
+        msg += `--------------------------------\n`;
+        msg += `📅 *दिनांक:* ${billDate}\n`;
+        msg += `👤 *ग्राहक:* ${custName}\n`;
+        msg += `📱 *ग्राहक मोबाईल:* ${custPhone}\n`;
+        msg += `✍️ *बिल तयार करणारा:* ${billerName}\n`;
+        msg += `📦 *माल काढणारा:* ${packerName}\n`;
+        msg += `--------------------------------\n`;
+        msg += `*खरेदी तपशील:*\n\n`;
+        msg += itemsListText;
+        msg += `--------------------------------\n`;
+        msg += `💰 *एकूण रक्कम (Grand Total): ₹${grandTotal}*\n`;
+        msg += `--------------------------------\n`;
+        msg += `धन्यवाद! आपली दिवाळी आनंदाची जावो! 🪔💥`;
+
+        if (type === 'owner') {
+          targetNumber = ownerNumber.replace(/[^0-9]/g, '');
+        } else if (type === 'customer' && custPhone && custPhone !== "-" && custPhone.length >= 10) {
+          let cleanCust = custPhone.replace(/[^0-9]/g, '');
+          targetNumber = cleanCust.length === 10 ? '91' + cleanCust : cleanCust;
+        }
       }
 
+      const encodedMsg = encodeURIComponent(msg);
       const waUrl = targetNumber 
         ? `https://wa.me/${targetNumber}?text=${encodedMsg}`
         : `https://api.whatsapp.com/send?text=${encodedMsg}`;
