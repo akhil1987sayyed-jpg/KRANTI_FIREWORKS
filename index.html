@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>न्यू क्रांती फायरवर्क्स - बिलिंग सिस्टीम</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- html2canvas और jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printArea, #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 10px !important;
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-amber-50 min-h-screen text-slate-800 pb-20">
+
+  <div class="max-w-3xl mx-auto p-3 sm:p-5">
+
+    <!-- मुख्य हेडर -->
+    <header class="bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 rounded-2xl shadow-md p-4 mb-4 text-white text-center border-b-4 border-amber-400">
+      <div class="flex justify-center items-center gap-2 mb-1">
+        <span class="text-2xl">✨</span>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-wide drop-shadow">न्यू क्रांती फायरवर्क्स</h1>
+        <span class="text-2xl">✨</span>
+      </div>
+      <p class="text-amber-100 text-xs sm:text-sm font-medium">होलसेल फटाके दरपत्रक २०२६ • मोबाईल बिलिंग सिस्टीम</p>
+      <p class="text-white text-xs mt-1 font-semibold" id="headerOwnerContact">संपर्क / मो.: ९८XXXXXXXX</p>
+    </header>
+
+    <!-- नेव्हिगेशन टॅब (Tabs) -->
+    <div class="flex bg-white rounded-xl shadow-sm p-1.5 mb-4 border border-orange-200">
+      <button id="tabBillingBtn" onclick="switchTab('billing')" 
+        class="flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all bg-red-600 text-white shadow">
+        🧾 बिल तयार करा
+      </button>
+      <button id="tabRatesBtn" onclick="switchTab('rates')" 
+        class="flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all text-gray-700 hover:bg-orange-50">
+        ⚙️ वस्तूंचे दर व मालकाचा नंबर
+      </button>
+    </div>
+
+    <!-- ==================== टॅब १: बिलिंग ==================== -->
+    <div id="billingTabContent">
+      
+      <!-- बिल व ग्राहक माहिती -->
+      <section class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-orange-100">
+        <h2 class="text-sm sm:text-base font-bold text-red-700 border-b pb-2 mb-3 flex items-center gap-2">
+          <span>📋</span> बिल व ग्राहकाचा तपशील
+        </h2>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">बिल तयार करणाऱ्याचे नाव (Billed By)</label>
+            <input type="text" id="billerName" placeholder="उदा. राहुल कदम / ऑपरेटर" 
+              class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300 bg-amber-50/40 font-medium">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">ग्राहकाचे नाव (Customer Name)</label>
+            <input type="text" id="custName" placeholder="उदा. सचिन सावंत" 
+              class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">ग्राहकाचा मोबाईल नंबर</label>
+            <input type="tel" id="custPhone" placeholder="९८XXXXXXXX" 
+              class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">दिनांक</label>
+            <input type="date" id="billDate" 
+              class="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300">
+          </div>
+        </div>
+      </section>
+
+      <!-- फटाक्यांची यादी व बिलिंग टेबल -->
+      <section class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-orange-100">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="text-sm sm:text-base font-bold text-red-700 flex items-center gap-1.5">
+            <span>🎆</span> फटाक्यांची निवड
+          </h2>
+          <button type="button" onclick="addNewRow()" 
+            class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold px-3 py-1.5 rounded-lg text-xs sm:text-sm transition-all flex items-center gap-1 shadow">
+            <span>➕</span> नवीन ओळ जोडा
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse min-w-[560px]">
+            <thead>
+              <tr class="bg-orange-100 text-slate-700 text-xs font-semibold border-b border-orange-200">
+                <th class="py-2.5 px-3 rounded-l-lg">वस्तूचे नाव (Heading व प्रकार)</th>
+                <th class="py-2.5 px-2 w-24">दर (रु.)</th>
+                <th class="py-2.5 px-2 w-20">नग (Qty)</th>
+                <th class="py-2.5 px-3 w-24 text-right">एकूण (रु.)</th>
+                <th class="py-2.5 px-2 w-12 text-center rounded-r-lg">रद्द</th>
+              </tr>
+            </thead>
+            <tbody id="itemsTableBody" class="divide-y divide-gray-100 text-sm">
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Grand Total -->
+        <div class="mt-4 p-3 bg-orange-50 rounded-xl border border-orange-200 flex justify-between items-center">
+          <span class="text-sm sm:text-base font-bold text-gray-800">एकूण बिल (Grand Total):</span>
+          <span class="text-xl sm:text-2xl font-extrabold text-red-600">₹ <span id="grandTotal">0</span></span>
+        </div>
+      </section>
+
+      <!-- बटणे -->
+      <section class="bg-white rounded-xl shadow-sm p-4 border border-orange-100 space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <button type="button" onclick="generatePerfectPDF()" id="pdfBtn"
+            class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-3 px-3 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-sm">
+            <span>📥</span>
+            <span id="pdfBtnText">थेट स्वच्छ PDF डाऊनलोड करा</span>
+          </button>
+
+          <button type="button" onclick="openSystemPrintPDF()" 
+            class="w-full bg-slate-700 hover:bg-slate-800 active:scale-95 text-white font-bold py-3 px-3 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-sm">
+            <span>🖨️</span>
+            <span>मोबाईल प्रिंट / Save as PDF</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <button type="button" onclick="sendToWhatsApp(false)" 
+            class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-3 px-3 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-sm">
+            <span>💬</span>
+            <span>ग्राहकाला WhatsApp वर पाठवा</span>
+          </button>
+
+          <button type="button" onclick="sendToWhatsApp(true)" 
+            class="w-full bg-green-700 hover:bg-green-800 active:scale-95 text-white font-bold py-3 px-3 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-sm">
+            <span>📲</span>
+            <span>मालकाच्या नंबरवर पाठवा</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== टॅब २: दरपत्रक व मालकाची माहिती ==================== -->
+    <div id="ratesTabContent" class="hidden">
+      <!-- मालकाचा नंबर सेट करण्याचा विभाग -->
+      <section class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-orange-100">
+        <h2 class="text-sm sm:text-base font-bold text-red-700 border-b pb-2 mb-3 flex items-center gap-2">
+          <span>📞</span> मालकाचा मोबाईल / WhatsApp नंबर सेट करा
+        </h2>
+        <div class="flex flex-col sm:flex-row gap-2 items-center">
+          <input type="tel" id="ownerNumberInput" placeholder="उदा. 9198XXXXXXXX" 
+            class="w-full sm:flex-1 px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none border-gray-300 font-mono">
+          <button type="button" onclick="saveOwnerNumber()" 
+            class="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white font-bold px-4 py-2 rounded-lg text-sm shadow">
+            नंबर सेव्ह करा
+          </button>
+        </div>
+        <p class="text-xs text-gray-500 mt-1.5">* हा नंबर बिलाच्या हेडमध्ये, PDF पावतीमध्ये आणि थेट मालकाला बिल पाठवण्यासाठी वापरला जाईल.</p>
+      </section>
+
+      <!-- दर व्यवस्थापन -->
+      <section class="bg-white rounded-xl shadow-sm p-4 border border-orange-100">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 pb-3 border-b border-orange-100">
+          <div>
+            <h2 class="text-base font-bold text-red-700">⚙️ फटाक्यांचे चालू दर बदला</h2>
+            <p class="text-xs text-gray-500">येथे बदललेले दर कायमस्वरूपी सेव्ह राहतील व बिलात लागू होतील.</p>
+          </div>
+          <button type="button" onclick="resetToDefaultRates()" 
+            class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs px-3 py-1.5 rounded-lg font-bold transition">
+            🔄 मूळ कंपनी दर आणा
+          </button>
+        </div>
+
+        <div id="rateEditorContainer" class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+        </div>
+
+        <div class="mt-4 pt-3 border-t flex gap-3">
+          <button type="button" onclick="saveUpdatedRates()" 
+            class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 rounded-xl shadow text-sm">
+            💾 सर्व नवीन दर सेव्ह करा
+          </button>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <!-- ==================== प्रत्यक्ष PDF साठीचे सुटसुटीत बिल (A4 Layout) ==================== -->
+  <div id="printArea" style="position: absolute; left: -9999px; top: 0; width: 700px; background: #ffffff; padding: 24px; color: #1e293b; font-family: 'Noto Sans Devanagari', sans-serif; box-sizing: border-box; border: 1px solid #fed7aa;">
+    
+    <!-- हेडर -->
+    <div style="text-align: center; border-bottom: 2px solid #b91c1c; padding-bottom: 8px; margin-bottom: 12px;">
+      <h1 style="font-size: 22px; font-weight: 800; color: #b91c1c; margin: 0; letter-spacing: 0.5px;">✨ न्यू क्रांती फायरवर्क्स ✨</h1>
+      <p style="font-size: 11px; color: #64748b; margin: 3px 0 0 0; font-weight: 600;">होलसेल व किरकोळ फटाके विक्री • बिल पावती २०२६</p>
+      <p style="font-size: 11px; color: #b91c1c; margin: 2px 0 0 0; font-weight: bold;">मोबाईल / संपर्क: <span id="pOwnerPhone">-</span></p>
+    </div>
+
+    <!-- माहिती बार -->
+    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 10px; padding: 6px 10px; background: #fff7ed; border-radius: 6px; border: 1px solid #ffedd5;">
+      <div>
+        <p style="margin: 2px 0;"><strong>ग्राहकाचे नाव:</strong> <span id="pCustName" style="color: #000;">-</span></p>
+        <p style="margin: 2px 0;"><strong>मोबाईल क्र.:</strong> <span id="pCustPhone" style="color: #000;">-</span></p>
+      </div>
+      <div style="text-align: right;">
+        <p style="margin: 2px 0;"><strong>बिल क्र.:</strong> <span id="pBillNo" style="font-weight: bold; color: #b91c1c;">NKF-101</span></p>
+        <p style="margin: 2px 0;"><strong>दिनांक:</strong> <span id="pBillDate">-</span></p>
+        <p style="margin: 2px 0;"><strong>बिल तयार करणारा:</strong> <span id="pBillerName" style="font-weight: bold;">-</span></p>
+      </div>
+    </div>
+
+    <!-- टेबल -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 12px;">
+      <thead>
+        <tr style="background-color: #fee2e2; border-top: 1.5px solid #dc2626; border-bottom: 1.5px solid #dc2626; color: #7f1d1d;">
+          <th style="padding: 6px 4px; text-align: center; width: 35px; border-right: 1px solid #fecaca;">क्र.</th>
+          <th style="padding: 6px 8px; text-align: left; border-right: 1px solid #fecaca;">वस्तूचे नाव (Item Name)</th>
+          <th style="padding: 6px 8px; text-align: right; width: 75px; border-right: 1px solid #fecaca;">दर (₹)</th>
+          <th style="padding: 6px 4px; text-align: center; width: 45px; border-right: 1px solid #fecaca;">नग</th>
+          <th style="padding: 6px 8px; text-align: right; width: 85px;">एकूण रक्कम (₹)</th>
+        </tr>
+      </thead>
+      <tbody id="pTableBody">
+      </tbody>
+      <tfoot>
+        <tr style="background-color: #fff1f2; border-top: 2px solid #b91c1c; font-weight: bold;">
+          <td colspan="4" style="padding: 8px 10px; text-align: right; font-size: 12px; color: #1e293b;">एकूण बिल रक्कम (Grand Total):</td>
+          <td style="padding: 8px; text-align: right; font-size: 13px; color: #b91c1c;">₹ <span id="pGrandTotal">0</span></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- फुटर -->
+    <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 10px; border-top: 1px dashed #cbd5e1; padding-top: 8px;">
+      <div style="color: #475569;">
+        <p style="margin: 0;">• विकलेला माल परत घेतला जाणार नाही.</p>
+        <p style="margin: 2px 0 0 0;">• आपली दिवाळी आनंदाची व सुरक्षित जावो! 🪔💥</p>
+      </div>
+      <div style="text-align: center; min-width: 130px;">
+        <p style="margin: 0; font-size: 9px; color: #64748b;">अधिकृत स्वाक्षरी</p>
+        <div style="height: 25px;"></div>
+        <p style="margin: 0; font-weight: bold; border-top: 1px solid #94a3b8; padding-top: 2px;" id="pFooterBiller">न्यू क्रांती फायरवर्क्स</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // मूळ कॅटलॉग
+    const defaultCatalog = [
+      {
+        category: "१. माळ (Garland - १ नग दर)",
+        items: [
+          { name: "१ के (1 K) - गुणवत्ता १", price: 110 },
+          { name: "१ के (1 K) - गुणवत्ता २", price: 180 },
+          { name: "२ के (2 K) - गुणवत्ता १", price: 220 },
+          { name: "२ के (2 K) - गुणवत्ता २", price: 360 },
+          { name: "५ के (5 K) - गुणवत्ता १", price: 550 },
+          { name: "५ के (5 K) - गुणवत्ता २", price: 900 },
+          { name: "१० के (10 K) - गुणवत्ता १", price: 1100 },
+          { name: "१० के (10 K) - गुणवत्ता २", price: 1800 },
+          { name: "२४ चौरासा (24 chaurasa)", price: 550 },
+          { name: "२८ चौरासा (28 chaurasa)", price: 450 },
+          { name: "२४ डिलक्स (24 Dlx)", price: 350 },
+          { name: "५० डिलक्स (50 Dlx)", price: 750 }
+        ]
+      },
+      {
+        category: "२. बिजली / लवंगी फटाके (Bijli Crackers)",
+        items: [
+          { name: "साधा रेगला (५०) - गुणवत्ता १", price: 140 },
+          { name: "साधा रेगला (५०) - गुणवत्ता २", price: 150 },
+          { name: "गोल्डन - गुणवत्ता १", price: 200 },
+          { name: "गोल्डन - गुणवत्ता २", price: 230 },
+          { name: "वनिता (५०)", price: 480 },
+          { name: "वनिता (७५)", price: 680 },
+          { name: "वनिता (१००)", price: 900 },
+          { name: "कॉक (१००)", price: 700 }
+        ]
+      },
+      {
+        category: "३. क्रॅक जॅक / रॉकेट (Crack Jack & Rockets)",
+        items: [
+          { name: "कीटकॅट - गुणवत्ता १", price: 200 },
+          { name: "कीटकॅट - गुणवत्ता २", price: 220 },
+          { name: "बटरफ्राय", price: 450 },
+          { name: "झिल झिल - गुणवत्ता १", price: 160 },
+          { name: "झिल झिल - गुणवत्ता २", price: 180 },
+          { name: "पेन्सिल लाल आणि हिरवी", price: 320 },
+          { name: "पेन्सिल १२ सेमी", price: 840 },
+          { name: "रॉकेट बॉम्ब - गुणवत्ता १", price: 420 },
+          { name: "रॉकेट बॉम्ब - गुणवत्ता २", price: 450 },
+          { name: "ल्यूनिक रॉकेट", price: 800 },
+          { name: "२ साऊंड रॉकेट", price: 850 },
+          { name: "३ साऊंड रॉकेट", price: 950 },
+          { name: "व्हिसलिंग रॉकेट", price: 1400 },
+          { name: "बेन १० रॉकेट", price: 300 },
+          { name: "टायटन / ल्युनिक पॅराशूट / २ जी रॉकेट", price: 300 }
+        ]
+      },
+      {
+        category: "४. लक्ष्मी / तोटा (Laxmi / Tota)",
+        items: [
+          { name: "कुर्वी", price: 190 },
+          { name: "२ साऊंड क्रॅकर्स", price: 210 },
+          { name: "४\" साधी - गुणवत्ता १", price: 160 },
+          { name: "४\" साधी - गुणवत्ता २", price: 180 },
+          { name: "४\" डिलक्स", price: 290 },
+          { name: "५\" तेरखेडा", price: 230 }
+        ]
+      },
+      {
+        category: "५. चक्कर / भुईचक्र (Chakkar)",
+        items: [
+          { name: "बिग १०", price: 280 },
+          { name: "बिग २५", price: 240 },
+          { name: "स्पेशल - गुणवत्ता १", price: 550 },
+          { name: "स्पेशल - गुणवत्ता २", price: 600 },
+          { name: "डिलक्स - गुणवत्ता १", price: 950 },
+          { name: "डिलक्स - गुणवत्ता २", price: 1000 },
+          { name: "व्हिसलिंग", price: 2300 },
+          { name: "क्रांती चक्कर", price: 2300 },
+          { name: "वनिता वर्ल्ड", price: 1700 },
+          { name: "वनिता स्पेशल", price: 1800 },
+          { name: "वनिता डिलक्स", price: 2000 },
+          { name: "वनिता सुपर डिलक्स", price: 2300 }
+        ]
+      },
+      {
+        category: "६. अनार / भुईनळे (Flower Pots)",
+        items: [
+          { name: "बिग - गुणवत्ता १", price: 450 },
+          { name: "बिग - गुणवत्ता २", price: 600 },
+          { name: "स्पेशल - गुणवत्ता १", price: 630 },
+          { name: "स्पेशल - गुणवत्ता २", price: 800 },
+          { name: "अशोका - गुणवत्ता १", price: 780 },
+          { name: "अशोका - गुणवत्ता २", price: 1100 },
+          { name: "कलर कोटी", price: 140 },
+          { name: "कलर कोटी डिलक्स", price: 230 },
+          { name: "वनिता कलर कोन", price: 450 },
+          { name: "वनिता कलर वर्ल्ड", price: 600 },
+          { name: "रॉयल सॅल्यूट", price: 470 },
+          { name: "गोल्ड माईन", price: 750 }
+        ]
+      },
+      {
+        category: "७. स्काय शॉट (Sky Shots)",
+        items: [
+          { name: "१२ शॉट - गुणवत्ता २", price: 110 },
+          { name: "३० शॉट - गुणवत्ता १", price: 250 },
+          { name: "३० शॉट - गुणवत्ता २", price: 320 },
+          { name: "६० शॉट - गुणवत्ता १", price: 500 },
+          { name: "६० शॉट - गुणवत्ता २", price: 640 },
+          { name: "१२० शॉट - गुणवत्ता १", price: 1000 },
+          { name: "१२० शॉट - गुणवत्ता २", price: 1280 },
+          { name: "२४० शॉट - गुणवत्ता १", price: 2000 },
+          { name: "२\" कलर पाईप - गुणवत्ता १", price: 30 },
+          { name: "२\" कलर पाईप - गुणवत्ता २", price: 32 }
+        ]
+      },
+      {
+        category: "८. बॉम्ब व इतर आवाज (Bomb)",
+        items: [
+          { name: "सद्दाम बॉम्ब - गुणवत्ता १", price: 350 },
+          { name: "सद्दाम बॉम्ब - गुणवत्ता २", price: 400 },
+          { name: "इंडियन टायगर - गुणवत्ता १", price: 700 },
+          { name: "इंडियन टायगर - गुणवत्ता २", price: 750 },
+          { name: "रोल कॅप्स - गुणवत्ता १", price: 50 },
+          { name: "रोल कॅप्स - गुणवत्ता २", price: 55 }
+        ]
+      },
+      {
+        category: "९. फुलबाजा (Sparklers)",
+        items: [
+          { name: "पूनम फुलबाजा", price: 60 },
+          { name: "१५/३० सेमी प्लेन", price: 240 },
+          { name: "१५/३० सेमी लाल", price: 280 },
+          { name: "१५/३० सेमी हिरवी", price: 290 }
+        ]
+      },
+      {
+        category: "१०. फॅन्सी फटाके (Fancy Items)",
+        items: [
+          { name: "हेलिकॉप्टर", price: 75 },
+          { name: "फोटो फ्लॅश", price: 65 },
+          { name: "पीकॉक / मोर", price: 125 },
+          { name: "कारंजे / फाउंटन", price: 190 },
+          { name: "बांब्रा / ड्रोन", price: 110 },
+          { name: "कलर स्मोक", price: 150 },
+          { name: "स्नेक सर्प गोळ्या", price: 180 },
+          { name: "वनिता लेझर ३x५", price: 2500 }
+        ]
+      }
+    ];
+
+    let fireworkCatalog = [];
+    let ownerNumber = "919876543210";
+
+    // डेटा लोड करणे
+    function loadSavedData() {
+      // दर डेटा
+      const savedCatalog = localStorage.getItem("nkf_catalog_data");
+      if (savedCatalog) {
+        try {
+          fireworkCatalog = JSON.parse(savedCatalog);
+        } catch(e) {
+          fireworkCatalog = JSON.parse(JSON.stringify(defaultCatalog));
+        }
+      } else {
+        fireworkCatalog = JSON.parse(JSON.stringify(defaultCatalog));
+      }
+
+      // मालकाचा नंबर
+      const savedOwner = localStorage.getItem("nkf_owner_phone");
+      if (savedOwner) {
+        ownerNumber = savedOwner;
+      }
+      document.getElementById("ownerNumberInput").value = ownerNumber;
+      updateOwnerDisplays();
+    }
+
+    function updateOwnerDisplays() {
+      document.getElementById("headerOwnerContact").innerText = `संपर्क / WhatsApp: ${ownerNumber}`;
+      document.getElementById("pOwnerPhone").innerText = ownerNumber;
+    }
+
+    function saveOwnerNumber() {
+      const val = document.getElementById("ownerNumberInput").value.trim();
+      if (!val) {
+        alert("कृपया वैध मोबाईल नंबर टाका!");
+        return;
+      }
+      ownerNumber = val;
+      localStorage.setItem("nkf_owner_phone", ownerNumber);
+      updateOwnerDisplays();
+      alert("✅ मालकाचा नंबर यशस्वीरित्या सेव्ह झाला!");
+    }
+
+    // टॅब बदलणे
+    function switchTab(tab) {
+      const bTab = document.getElementById("billingTabContent");
+      const rTab = document.getElementById("ratesTabContent");
+      const bBtn = document.getElementById("tabBillingBtn");
+      const rBtn = document.getElementById("tabRatesBtn");
+
+      if (tab === 'billing') {
+        bTab.classList.remove("hidden");
+        rTab.classList.add("hidden");
+        bBtn.className = "flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all bg-red-600 text-white shadow";
+        rBtn.className = "flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all text-gray-700 hover:bg-orange-50";
+        refreshDropdowns();
+      } else {
+        bTab.classList.add("hidden");
+        rTab.classList.remove("hidden");
+        rBtn.className = "flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all bg-red-600 text-white shadow";
+        bBtn.className = "flex-1 py-2 text-center rounded-lg font-bold text-sm transition-all text-gray-700 hover:bg-orange-50";
+        renderRateEditor();
+      }
+    }
+
+    // Dropdown तयार करणे
+    function getDropdownHtml() {
+      let html = '<option value="">-- फटाका निवडा --</option>';
+      fireworkCatalog.forEach((cat, cIdx) => {
+        html += `<optgroup label="${cat.category}">`;
+        cat.items.forEach((it, iIdx) => {
+          html += `<option value="${cIdx}_${iIdx}">${it.name} (₹${it.price})</option>`;
+        });
+        html += `</optgroup>`;
+      });
+      return html;
+    }
+
+    function refreshDropdowns() {
+      document.querySelectorAll(".item-select").forEach(sel => {
+        const currentVal = sel.value;
+        sel.innerHTML = getDropdownHtml();
+        sel.value = currentVal;
+      });
+    }
+
+    // दर व्यवस्थापन स्क्रीन बनवणे
+    function renderRateEditor() {
+      const container = document.getElementById("rateEditorContainer");
+      container.innerHTML = "";
+
+      fireworkCatalog.forEach((cat, cIdx) => {
+        const catBox = document.createElement("div");
+        catBox.className = "p-3 bg-amber-50/60 rounded-xl border border-amber-200";
+        
+        let itemsHtml = "";
+        cat.items.forEach((item, iIdx) => {
+          itemsHtml += `
+            <div class="flex items-center justify-between gap-2 py-1.5 border-b border-amber-100 last:border-0">
+              <span class="text-xs font-semibold text-gray-700 flex-1">${item.name}</span>
+              <div class="flex items-center gap-1">
+                <span class="text-xs text-gray-500 font-bold">₹</span>
+                <input type="number" min="0" value="${item.price}" 
+                  data-cidx="${cIdx}" data-iidx="${iIdx}"
+                  class="rate-input w-20 px-2 py-1 text-xs border rounded font-bold text-right border-gray-300 focus:ring-1 focus:ring-orange-500">
+              </div>
+            </div>
+          `;
+        });
+
+        catBox.innerHTML = `
+          <h3 class="text-xs font-bold text-orange-800 mb-2">${cat.category}</h3>
+          <div class="space-y-1">${itemsHtml}</div>
+        `;
+        container.appendChild(catBox);
+      });
+    }
+
+    function saveUpdatedRates() {
+      const inputs = document.querySelectorAll(".rate-input");
+      inputs.forEach(input => {
+        const cIdx = parseInt(input.getAttribute("data-cidx"));
+        const iIdx = parseInt(input.getAttribute("data-iidx"));
+        const val = parseFloat(input.value) || 0;
+        fireworkCatalog[cIdx].items[iIdx].price = val;
+      });
+
+      localStorage.setItem("nkf_catalog_data", JSON.stringify(fireworkCatalog));
+      alert("✅ सर्व फटाक्यांचे नवीन दर यशस्वीरित्या सेव्ह झाले!");
+      switchTab('billing');
+    }
+
+    function resetToDefaultRates() {
+      if (confirm("कंपनीचे मूळ डिफॉल्ट दर परत आणायचे आहेत का?")) {
+        fireworkCatalog = JSON.parse(JSON.stringify(defaultCatalog));
+        localStorage.removeItem("nkf_catalog_data");
+        renderRateEditor();
+        alert("मूळ दर रिस्टोअर केले गेले आहेत!");
+      }
+    }
+
+    function addNewRow() {
+      const tbody = document.getElementById("itemsTableBody");
+      const tr = document.createElement("tr");
+      tr.className = "hover:bg-amber-50/50";
+      tr.innerHTML = `
+        <td class="py-2 px-2">
+          <select onchange="onItemSelect(this)" class="item-select w-full p-2 text-xs border rounded-md border-gray-300 focus:ring-1 focus:ring-orange-500 bg-white font-medium">
+            ${getDropdownHtml()}
+          </select>
+        </td>
+        <td class="py-2 px-2">
+          <input type="number" min="0" value="0" oninput="calculateTotal()" 
+            class="item-price w-full p-2 text-xs border rounded-md border-gray-300 text-right font-semibold">
+        </td>
+        <td class="py-2 px-2">
+          <input type="number" min="1" value="1" oninput="calculateTotal()" 
+            class="item-qty w-full p-2 text-xs border rounded-md border-gray-300 text-center font-semibold">
+        </td>
+        <td class="py-2 px-3 text-right font-bold text-gray-700">
+          ₹ <span class="row-total">0</span>
+        </td>
+        <td class="py-2 px-2 text-center">
+          <button type="button" onclick="removeRow(this)" class="text-red-500 hover:text-red-700 font-bold px-2 py-1">✕</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    function onItemSelect(sel) {
+      const row = sel.closest("tr");
+      const priceInput = row.querySelector(".item-price");
+      if (sel.value) {
+        const [cIdx, iIdx] = sel.value.split("_").map(Number);
+        priceInput.value = fireworkCatalog[cIdx].items[iIdx].price;
+      } else {
+        priceInput.value = 0;
+      }
+      calculateTotal();
+    }
+
+    function removeRow(btn) {
+      const tbody = document.getElementById("itemsTableBody");
+      if (tbody.querySelectorAll("tr").length > 1) {
+        btn.closest("tr").remove();
+        calculateTotal();
+      } else {
+        alert("किमान १ ओळ असणे आवश्यक आहे!");
+      }
+    }
+
+    function calculateTotal() {
+      const rows = document.querySelectorAll("#itemsTableBody tr");
+      let grandTotal = 0;
+      rows.forEach(row => {
+        const p = parseFloat(row.querySelector(".item-price").value) || 0;
+        const q = parseFloat(row.querySelector(".item-qty").value) || 0;
+        const tot = p * q;
+        row.querySelector(".row-total").innerText = tot;
+        grandTotal += tot;
+      });
+      document.getElementById("grandTotal").innerText = grandTotal.toLocaleString('mr-IN');
+      return grandTotal;
+    }
+
+    function populatePrintArea() {
+      const billerName = document.getElementById("billerName").value.trim() || "ऑपरेटर";
+      const custName = document.getElementById("custName").value.trim() || "ग्राहक";
+      const custPhone = document.getElementById("custPhone").value.trim() || "-";
+      const billDate = document.getElementById("billDate").value;
+
+      document.getElementById("pBillerName").innerText = billerName;
+      document.getElementById("pCustName").innerText = custName;
+      document.getElementById("pCustPhone").innerText = custPhone;
+      document.getElementById("pBillDate").innerText = billDate;
+      document.getElementById("pOwnerPhone").innerText = ownerNumber;
+      document.getElementById("pFooterBiller").innerText = billerName ? `स्वाक्षरी: ${billerName}` : "न्यू क्रांती फायरवर्क्स";
+      
+      document.getElementById("pBillNo").innerText = "NKF-" + Math.floor(1000 + Math.random() * 9000);
+
+      const pTableBody = document.getElementById("pTableBody");
+      pTableBody.innerHTML = "";
+
+      let count = 0;
+      let totalAmount = 0;
+      const rows = document.querySelectorAll("#itemsTableBody tr");
+
+      rows.forEach(row => {
+        const sel = row.querySelector(".item-select");
+        if (sel.value) {
+          const [cIdx, iIdx] = sel.value.split("_").map(Number);
+          const item = fireworkCatalog[cIdx].items[iIdx];
+          const price = parseFloat(row.querySelector(".item-price").value) || 0;
+          const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
+          const total = price * qty;
+
+          if (qty > 0) {
+            count++;
+            totalAmount += total;
+            const tr = document.createElement("tr");
+            tr.style.borderBottom = "1px solid #e2e8f0";
+            tr.innerHTML = `
+              <td style="padding: 6px 4px; text-align: center; border-right: 1px solid #f1f5f9;">${count}</td>
+              <td style="padding: 6px 8px; text-align: left; border-right: 1px solid #f1f5f9; font-weight: 500;">${item.name}</td>
+              <td style="padding: 6px 8px; text-align: right; border-right: 1px solid #f1f5f9;">₹${price}</td>
+              <td style="padding: 6px 4px; text-align: center; border-right: 1px solid #f1f5f9;">${qty}</td>
+              <td style="padding: 6px 8px; text-align: right; font-weight: bold; color: #b91c1c;">₹${total}</td>
+            `;
+            pTableBody.appendChild(tr);
+          }
+        }
+      });
+
+      document.getElementById("pGrandTotal").innerText = totalAmount.toLocaleString('mr-IN');
+      return { count, totalAmount, custName, billDate, billerName };
+    }
+
+    // स्वच्छ PDF तयार करणे
+    async function generatePerfectPDF() {
+      const { count, custName, billDate } = populatePrintArea();
+      if (count === 0) {
+        alert("कृपया बिलात किमान एक फटाका निवडा!");
+        return;
+      }
+
+      const btnText = document.getElementById("pdfBtnText");
+      btnText.innerText = "⏳ सुबक PDF तयार होत आहे...";
+
+      const printArea = document.getElementById("printArea");
+      
+      printArea.style.position = "fixed";
+      printArea.style.left = "0";
+      printArea.style.top = "0";
+      printArea.style.zIndex = "99999";
+      printArea.style.display = "block";
+
+      try {
+        const canvas = await html2canvas(printArea, {
+          scale: 2.5,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        });
+
+        printArea.style.position = "absolute";
+        printArea.style.left = "-9999px";
+        printArea.style.top = "0";
+        printArea.style.zIndex = "-1";
+
+        const imgData = canvas.toDataURL("image/jpeg", 0.98);
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`न्यू_क्रांती_बिल_${custName}_${billDate}.pdf`);
+
+        btnText.innerText = "थेट स्वच्छ PDF डाऊनलोड करा";
+      } catch (err) {
+        console.error("PDF Error: ", err);
+        printArea.style.position = "absolute";
+        printArea.style.left = "-9999px";
+        btnText.innerText = "थेट स्वच्छ PDF डाऊनलोड करा";
+        alert("थेट PDF मध्ये अडचण आली, सिस्टीम प्रिंट पर्याय उघडत आहे.");
+        openSystemPrintPDF();
+      }
+    }
+
+    function openSystemPrintPDF() {
+      const { count } = populatePrintArea();
+      if (count === 0) {
+        alert("कृपया बिलात किमान एक फटाका निवडा!");
+        return;
+      }
+      window.print();
+    }
+
+    // WhatsApp वर बिल पाठवणे
+    function sendToWhatsApp(sendToOwner = false) {
+      const billerName = document.getElementById("billerName").value.trim() || "-";
+      const custName = document.getElementById("custName").value.trim() || "ग्राहक";
+      const custPhone = document.getElementById("custPhone").value.trim() || "-";
+      const billDate = document.getElementById("billDate").value;
+
+      const rows = document.querySelectorAll("#itemsTableBody tr");
+      let itemsListText = "";
+      let count = 0;
+      let grandTotal = 0;
+
+      rows.forEach(row => {
+        const sel = row.querySelector(".item-select");
+        if (sel.value) {
+          const [cIdx, iIdx] = sel.value.split("_").map(Number);
+          const item = fireworkCatalog[cIdx].items[iIdx];
+          const price = parseFloat(row.querySelector(".item-price").value) || 0;
+          const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
+          const total = price * qty;
+
+          if (qty > 0) {
+            count++;
+            grandTotal += total;
+            itemsListText += `${count}. ${item.name}\n   ${qty} नग × ₹${price} = ₹${total}\n`;
+          }
+        }
+      });
+
+      if (count === 0) {
+        alert("कृपया बिलात किमान एक फटाका निवडा!");
+        return;
+      }
+
+      let msg = `✨ *न्यू क्रांती फायरवर्क्स* ✨\n`;
+      msg += `📞 *मालक संपर्क:* ${ownerNumber}\n`;
+      msg += `--------------------------------\n`;
+      msg += `📅 *दिनांक:* ${billDate}\n`;
+      msg += `👤 *ग्राहक:* ${custName}\n`;
+      msg += `📱 *ग्राहक मोबाईल:* ${custPhone}\n`;
+      msg += `✍️ *बिल तयार करणारा:* ${billerName}\n`;
+      msg += `--------------------------------\n`;
+      msg += `*खरेदी तपशील:*\n\n`;
+      msg += itemsListText;
+      msg += `--------------------------------\n`;
+      msg += `💰 *एकूण रक्कम (Grand Total): ₹${grandTotal}*\n`;
+      msg += `--------------------------------\n`;
+      msg += `धन्यवाद! आपली दिवाळी आनंदाची जावो! 🪔💥`;
+
+      const encodedMsg = encodeURIComponent(msg);
+      
+      let targetNumber = "";
+      if (sendToOwner) {
+        targetNumber = ownerNumber.replace(/[^0-9]/g, '');
+      } else if (custPhone && custPhone !== "-" && custPhone.length >= 10) {
+        let cleanCust = custPhone.replace(/[^0-9]/g, '');
+        targetNumber = cleanCust.length === 10 ? '91' + cleanCust : cleanCust;
+      }
+
+      const waUrl = targetNumber 
+        ? `https://wa.me/${targetNumber}?text=${encodedMsg}`
+        : `https://api.whatsapp.com/send?text=${encodedMsg}`;
+
+      window.open(waUrl, "_blank");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadSavedData();
+      document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
+      addNewRow();
+      addNewRow();
+    });
+  </script>
+</body>
+</html>
